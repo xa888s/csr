@@ -39,11 +39,11 @@ impl Message {
             plainvec.push(match char {
                 65..=90 => {
                     let pos = char % 65;
-                    65 + ((pos as i8 - key as i8).rem_euclid(26)) as u8
+                    65 + (((25 - pos) + key) % 26) 
                 }
                 97..=122 => {
                     let pos = char % 97;
-                    97 + ((pos as i8 - key as i8).rem_euclid(26)) as u8
+                    97 + (((25 - pos) + key) % 26) 
                 }
                 _ => char,
             });

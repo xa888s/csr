@@ -13,10 +13,10 @@ impl Message {
     }
 
     pub fn encrypt(self, key: u8) -> String {
-        let mut ciphervec: Vec<u8> = Vec::with_capacity(self.text.len());
+        let mut vec: Vec<u8> = Vec::with_capacity(self.text.len());
 
         for char in self.text.bytes() {
-            ciphervec.push(match char {
+            vec.push(match char {
                 65..=90 => {
                     let pos = char % 65;
                     65 + ((pos + key) % 26)
@@ -28,15 +28,15 @@ impl Message {
                 _ => char,
             });
         }
-        // this is safe because non-utf8 bytes will never be pushed to ciphervec
-        unsafe { String::from_utf8_unchecked(ciphervec) }
+        // this is safe because non-utf8 bytes will never be pushed to vec
+        unsafe { String::from_utf8_unchecked(vec) }
     }
 
     pub fn decrypt(self, key: u8) -> String {
-        let mut plainvec: Vec<u8> = Vec::with_capacity(self.text.len());
+        let mut vec: Vec<u8> = Vec::with_capacity(self.text.len());
 
         for char in self.text.bytes() {
-            plainvec.push(match char {
+            vec.push(match char {
                 65..=90 => {
                     let pos = char % 65;
                     90 - (((25 - pos) + key) % 26) 
@@ -48,8 +48,8 @@ impl Message {
                 _ => char,
             });
         }
-        // this is safe because non-utf8 bytes will never be pushed to plainvec
-        unsafe { String::from_utf8_unchecked(plainvec) }
+        // this is safe because non-utf8 bytes will never be pushed to vec
+        unsafe { String::from_utf8_unchecked(vec) }
     }
 }
 

@@ -11,10 +11,7 @@ pub struct Message {
 
 impl Message {
     pub fn new(text: String, kind: Kind) -> Message {
-        Message {
-            text: text,
-            kind: kind,
-        }
+        Message { text, kind }
     }
     pub fn translate(self, key: u8) -> String {
         match self.kind {

@@ -16,8 +16,14 @@ impl Message {
             kind: kind,
         }
     }
+    pub fn translate(self, key: u8) -> String {
+        match self.kind {
+            Kind::Plain => self.encrypt(key),
+            Kind::Cipher => self.decrypt(key),
+        }
+    }
 
-    pub fn encrypt(self, key: u8) -> String {
+    fn encrypt(self, key: u8) -> String {
         let mut vec: Vec<u8> = Vec::with_capacity(self.text.len());
 
         for char in self.text.bytes() {
@@ -37,7 +43,7 @@ impl Message {
         unsafe { String::from_utf8_unchecked(vec) }
     }
 
-    pub fn decrypt(self, key: u8) -> String {
+    fn decrypt(self, key: u8) -> String {
         let mut vec: Vec<u8> = Vec::with_capacity(self.text.len());
 
         for char in self.text.bytes() {
@@ -70,7 +76,7 @@ mod tests {
         let message = Message::new(input, Kind::Cipher);
         let key: u8 = 10;
 
-        assert_eq!(message.decrypt(key), output);
+        assert_eq!(message.translate(key), output);
     }
 
     #[test]
@@ -81,7 +87,7 @@ mod tests {
         let message = Message::new(input, Kind::Plain);
         let key: u8 = 20;
 
-        assert_eq!(message.encrypt(key), output);
+        assert_eq!(message.translate(key), output);
     }
 
     #[test]
@@ -92,7 +98,7 @@ mod tests {
         let message = Message::new(input, Kind::Cipher);
         let key: u8 = 15;
 
-        assert_eq!(message.decrypt(key), output);
+        assert_eq!(message.translate(key), output);
     }
 
     #[test]
@@ -103,6 +109,6 @@ mod tests {
         let message = Message::new(input, Kind::Plain);
         let key: u8 = 15;
 
-        assert_eq!(message.encrypt(key), output);
+        assert_eq!(message.translate(key), output);
     }
 }

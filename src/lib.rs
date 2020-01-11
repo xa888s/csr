@@ -5,7 +5,7 @@ pub enum Kind {
 
 pub struct Message {
     pub text: String,
-    kind: Kind,
+    pub kind: Kind,
 }
 
 impl Message {

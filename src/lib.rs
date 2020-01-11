@@ -1,3 +1,4 @@
+#[derive(Copy, Clone)]
 pub enum Kind {
     Plain,
     Cipher,
@@ -66,7 +67,7 @@ mod tests {
         let input = String::from("Drsc sc k coxdoxmo");
         let output = String::from("This is a sentence");
 
-        let message = Message::new(input);
+        let message = Message::new(input, Kind::Cipher);
         let key: u8 = 10;
 
         assert_eq!(message.decrypt(key), output);
@@ -77,7 +78,7 @@ mod tests {
         let input = String::from("Tests are important");
         let output = String::from("Nymnm uly cgjilnuhn");
 
-        let message = Message::new(input);
+        let message = Message::new(input, Kind::Plain);
         let key: u8 = 20;
 
         assert_eq!(message.encrypt(key), output);
@@ -88,7 +89,7 @@ mod tests {
         let input = String::from("😀 😁 😂 🤣 😃 😄 😅 😆 😉 😊 😋 😎 😍");
 
         let output = input.clone();
-        let message = Message::new(input);
+        let message = Message::new(input, Kind::Cipher);
         let key: u8 = 15;
 
         assert_eq!(message.decrypt(key), output);
@@ -99,7 +100,7 @@ mod tests {
         let input = String::from("😀 😁 😂 🤣 😃 😄 😅 😆 😉 😊 😋 😎 😍");
 
         let output = input.clone();
-        let message = Message::new(input);
+        let message = Message::new(input, Kind::Plain);
         let key: u8 = 15;
 
         assert_eq!(message.encrypt(key), output);

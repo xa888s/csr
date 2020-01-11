@@ -1,15 +1,19 @@
-pub enum Mode {
-    Encrypt,
-    Decrypt,
+pub enum Kind {
+    Plain,
+    Cipher,
 }
 
 pub struct Message {
     pub text: String,
+    kind: Kind,
 }
 
 impl Message {
-    pub fn new(text: String) -> Message {
-        Message { text: text }
+    pub fn new(text: String, kind: Kind) -> Message {
+        Message {
+            text: text,
+            kind: kind,
+        }
     }
 
     pub fn encrypt(self, key: u8) -> String {
@@ -39,11 +43,11 @@ impl Message {
             vec.push(match char {
                 65..=90 => {
                     let pos = char % 65;
-                    90 - (((25 - pos) + key) % 26) 
+                    90 - (((25 - pos) + key) % 26)
                 }
                 97..=122 => {
                     let pos = char % 97;
-                    122 - (((25 - pos) + key) % 26) 
+                    122 - (((25 - pos) + key) % 26)
                 }
                 _ => char,
             });

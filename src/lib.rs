@@ -108,4 +108,11 @@ mod tests {
 
         assert_eq!(message.translate(key), output);
     }
+
+    #[test]
+    fn clone_test() {
+        let plain_text = Message::new("Hello world!".to_string(), Kind::Plain);
+        let cipher_text = plain_text.translate(2);
+        assert_eq!("Jgnnq yqtnf!", cipher_text);
+    }
 }

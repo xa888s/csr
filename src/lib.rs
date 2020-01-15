@@ -4,14 +4,14 @@ pub enum Kind {
     Cipher,
 }
 
-pub struct Message {
+pub struct Caesar {
     pub text: String,
     pub kind: Kind,
 }
 
-impl Message {
-    pub fn new(text: String, kind: Kind) -> Message {
-        Message { text, kind }
+impl Caesar {
+    pub fn new(text: String, kind: Kind) -> Self {
+        Self { text, kind }
     }
     pub fn translate(self, key: u8) -> String {
         match self.kind {
@@ -70,7 +70,7 @@ mod tests {
         let input = String::from("Drsc sc k coxdoxmo");
         let output = String::from("This is a sentence");
 
-        let message = Message::new(input, Kind::Cipher);
+        let message = Caesar::new(input, Kind::Cipher);
         let key: u8 = 10;
 
         assert_eq!(message.translate(key), output);
@@ -81,7 +81,7 @@ mod tests {
         let input = String::from("Tests are important");
         let output = String::from("Nymnm uly cgjilnuhn");
 
-        let message = Message::new(input, Kind::Plain);
+        let message = Caesar::new(input, Kind::Plain);
         let key: u8 = 20;
 
         assert_eq!(message.translate(key), output);
@@ -92,7 +92,7 @@ mod tests {
         let input = String::from("😀 😁 😂 🤣 😃 😄 😅 😆 😉 😊 😋 😎 😍");
 
         let output = input.clone();
-        let message = Message::new(input, Kind::Cipher);
+        let message = Caesar::new(input, Kind::Cipher);
         let key: u8 = 15;
 
         assert_eq!(message.translate(key), output);
@@ -103,7 +103,7 @@ mod tests {
         let input = String::from("😀 😁 😂 🤣 😃 😄 😅 😆 😉 😊 😋 😎 😍");
 
         let output = input.clone();
-        let message = Message::new(input, Kind::Plain);
+        let message = Caesar::new(input, Kind::Plain);
         let key: u8 = 15;
 
         assert_eq!(message.translate(key), output);
@@ -111,7 +111,7 @@ mod tests {
 
     #[test]
     fn clone_test() {
-        let plain_text = Message::new("Hello world!".to_string(), Kind::Plain);
+        let plain_text = Caesar::new("Hello world!".to_string(), Kind::Plain);
         let cipher_text = plain_text.translate(2);
         assert_eq!("Jgnnq yqtnf!", cipher_text);
     }

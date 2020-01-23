@@ -5,7 +5,7 @@ This is a library that provides encryption and decryption for the caesar cipher.
 
 # Usage
 ```
-use caesar::{Message, Kind};
+use caesar::{Caesar, Kind};
 
 fn main() {
     let plain_text = Caesar::new("Hello world!".to_string(), Kind::Plain);

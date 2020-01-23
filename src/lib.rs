@@ -1,59 +1,51 @@
-#[derive(Copy, Clone)]
-pub enum Kind {
-    Plain,
-    Cipher,
-}
-
-pub struct Caesar {
-    pub text: String,
-    pub kind: Kind,
+#[derive(Clone)]
+pub enum Caesar {
+    Plain(String),
+    Cipher(String),
 }
 
 impl Caesar {
-    pub fn new(text: String, kind: Kind) -> Self {
-        Self { text, kind }
-    }
-    pub fn translate(self, key: u8) -> String {
-        match self.kind {
-            Kind::Plain => self.encrypt(key),
-            Kind::Cipher => self.decrypt(key),
+    pub fn translate(&self, key: u8) -> String {
+        match self {
+            Self::Plain(buf) => Self::encrypt(buf, key),
+            Self::Cipher(buf) => Self::decrypt(buf, key),
         }
     }
 
-    fn encrypt(self, key: u8) -> String {
-        let mut vec: Vec<u8> = Vec::with_capacity(self.text.len());
+    fn encrypt(buf: &str, key: u8) -> String {
+        let mut vec: Vec<u8> = Vec::with_capacity(buf.len());
 
-        for char in self.text.bytes() {
-            vec.push(match char {
+        for c in buf.bytes() {
+            vec.push(match c {
                 65..=90 => {
-                    let pos = char % 65;
+                    let pos = c % 65;
                     65 + ((pos + key) % 26)
                 }
                 97..=122 => {
-                    let pos = char % 97;
+                    let pos = c % 97;
                     97 + ((pos + key) % 26)
                 }
-                _ => char,
+                _ => c,
             });
         }
         // this is safe because non-utf8 bytes will never be pushed to vec
         unsafe { String::from_utf8_unchecked(vec) }
     }
 
-    fn decrypt(self, key: u8) -> String {
-        let mut vec: Vec<u8> = Vec::with_capacity(self.text.len());
+    fn decrypt(buf: &str, key: u8) -> String {
+        let mut vec: Vec<u8> = Vec::with_capacity(buf.len());
 
-        for char in self.text.bytes() {
-            vec.push(match char {
+        for c in buf.bytes() {
+            vec.push(match c {
                 65..=90 => {
-                    let pos = char % 65;
+                    let pos = c % 65;
                     90 - (((25 - pos) + key) % 26)
                 }
                 97..=122 => {
-                    let pos = char % 97;
+                    let pos = c % 97;
                     122 - (((25 - pos) + key) % 26)
                 }
-                _ => char,
+                _ => c,
             });
         }
         // this is safe because non-utf8 bytes will never be pushed to vec
@@ -70,7 +62,7 @@ mod tests {
         let input = String::from("Drsc sc k coxdoxmo");
         let output = String::from("This is a sentence");
 
-        let message = Caesar::new(input, Kind::Cipher);
+        let message = Caesar::Cipher(input);
         let key: u8 = 10;
 
         assert_eq!(message.translate(key), output);
@@ -81,7 +73,7 @@ mod tests {
         let input = String::from("Tests are important");
         let output = String::from("Nymnm uly cgjilnuhn");
 
-        let message = Caesar::new(input, Kind::Plain);
+        let message = Caesar::Plain(input);
         let key: u8 = 20;
 
         assert_eq!(message.translate(key), output);
@@ -92,7 +84,7 @@ mod tests {
         let input = String::from("😀 😁 😂 🤣 😃 😄 😅 😆 😉 😊 😋 😎 😍");
 
         let output = input.clone();
-        let message = Caesar::new(input, Kind::Cipher);
+        let message = Caesar::Cipher(input);
         let key: u8 = 15;
 
         assert_eq!(message.translate(key), output);
@@ -103,7 +95,7 @@ mod tests {
         let input = String::from("😀 😁 😂 🤣 😃 😄 😅 😆 😉 😊 😋 😎 😍");
 
         let output = input.clone();
-        let message = Caesar::new(input, Kind::Plain);
+        let message = Caesar::Plain(input);
         let key: u8 = 15;
 
         assert_eq!(message.translate(key), output);
@@ -111,7 +103,7 @@ mod tests {
 
     #[test]
     fn clone_test() {
-        let plain_text = Caesar::new("Hello world!".to_string(), Kind::Plain);
+        let plain_text = Caesar::Plain("Hello world!".to_string());
         let cipher_text = plain_text.translate(2);
         assert_eq!("Jgnnq yqtnf!", cipher_text);
     }

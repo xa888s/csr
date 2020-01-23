@@ -1,21 +1,23 @@
+use std::ops::Deref;
+
 #[derive(Clone)]
-pub enum Caesar {
-    Plain(String),
-    Cipher(String),
+pub enum Caesar<T> {
+    Plain(T),
+    Cipher(T),
 }
 
-impl Caesar {
+impl<T: Deref<Target = str>> Caesar<T> {
     pub fn translate(&self, key: u8) -> String {
         match self {
-            Self::Plain(buf) => Self::encrypt(buf, key),
-            Self::Cipher(buf) => Self::decrypt(buf, key),
+            Self::Plain(buf) => Self::encrypt(buf.as_bytes(), key),
+            Self::Cipher(buf) => Self::decrypt(buf.as_bytes(), key),
         }
     }
 
-    fn encrypt(buf: &str, key: u8) -> String {
+    fn encrypt(buf: &[u8], key: u8) -> String {
         let mut vec: Vec<u8> = Vec::with_capacity(buf.len());
 
-        for c in buf.bytes() {
+        for c in buf {
             vec.push(match c {
                 65..=90 => {
                     let pos = c % 65;
@@ -25,17 +27,17 @@ impl Caesar {
                     let pos = c % 97;
                     97 + ((pos + key) % 26)
                 }
-                _ => c,
+                _ => *c,
             });
         }
         // this is safe because non-utf8 bytes will never be pushed to vec
         unsafe { String::from_utf8_unchecked(vec) }
     }
 
-    fn decrypt(buf: &str, key: u8) -> String {
+    fn decrypt(buf: &[u8], key: u8) -> String {
         let mut vec: Vec<u8> = Vec::with_capacity(buf.len());
 
-        for c in buf.bytes() {
+        for c in buf {
             vec.push(match c {
                 65..=90 => {
                     let pos = c % 65;
@@ -45,7 +47,7 @@ impl Caesar {
                     let pos = c % 97;
                     122 - (((25 - pos) + key) % 26)
                 }
-                _ => c,
+                _ => *c,
             });
         }
         // this is safe because non-utf8 bytes will never be pushed to vec
@@ -102,8 +104,8 @@ mod tests {
     }
 
     #[test]
-    fn clone_test() {
-        let plain_text = Caesar::Plain("Hello world!".to_string());
+    fn slice_test() {
+        let plain_text = Caesar::Plain("Hello world!");
         let cipher_text = plain_text.translate(2);
         assert_eq!("Jgnnq yqtnf!", cipher_text);
     }

@@ -8,7 +8,7 @@ This is a library that provides encryption and decryption for the caesar cipher.
 use caesar::Caesar;
 
 fn main() {
-    let plain_text = Caesar::Plain("Hello world!".to_string());
+    let plain_text = Caesar::Plain("Hello world!");
     let cipher_text = plain_text.translate(2);
     assert_eq!("Jgnnq yqtnf!", cipher_text);
 }

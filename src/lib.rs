@@ -104,9 +104,17 @@ mod tests {
     }
 
     #[test]
-    fn slice_test() {
+    fn str_test() {
         let plain_text = Caesar::Plain("Hello world!");
         let cipher_text = plain_text.translate(2);
         assert_eq!("Jgnnq yqtnf!", cipher_text);
+    }
+
+    #[test]
+    fn slice_test() {
+        let text = "Top secret message!";
+        let plain_text = Caesar::Plain(&text[0..10]);
+        let cipher_text = plain_text.translate(2);
+        assert_eq!("Vqr ugetgv", cipher_text);
     }
 }

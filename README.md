@@ -5,10 +5,10 @@ This is a library that provides encryption and decryption for the caesar cipher.
 
 # Usage
 ```
-use caesar::{Caesar, Kind};
+use caesar::Caesar;
 
 fn main() {
-    let plain_text = Caesar::new("Hello world!".to_string(), Kind::Plain);
+    let plain_text = Caesar::Plain("Hello world!".to_string());
     let cipher_text = plain_text.translate(2);
     assert_eq!("Jgnnq yqtnf!", cipher_text);
 }

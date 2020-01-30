@@ -1,6 +1,7 @@
 use num::cast::AsPrimitive;
 use std::ops::Deref;
 
+#[derive(Clone, Copy)]
 pub struct Caesar {
     shift: u8,
 }

@@ -1,55 +1,59 @@
+use num::cast::AsPrimitive;
 use std::ops::Deref;
 
-#[derive(Clone)]
-pub enum Caesar<T> {
-    Plain(T),
-    Cipher(T),
+pub struct Caesar {
+    shift: u8,
 }
 
-impl<T: Deref<Target = str>> Caesar<T> {
-    pub fn translate(&self, key: u8) -> String {
-        match self {
-            Self::Plain(buf) => Self::encrypt(buf.as_bytes(), key),
-            Self::Cipher(buf) => Self::decrypt(buf.as_bytes(), key),
+impl Caesar {
+    pub fn new<U: AsPrimitive<u8>>(shift: U) -> Self {
+        // Shift size must be bigger than 0 and smaller than or equal to 26
+        match shift.as_() {
+            0..=26 => Caesar { shift: shift.as_() },
+            _ => panic!("Shift size must be between 0 and 26!"),
         }
     }
 
-    fn encrypt(buf: &[u8], key: u8) -> String {
-        let mut vec: Vec<u8> = Vec::with_capacity(buf.len());
+    pub fn encrypt<S: Deref<Target = str>>(&self, buf: S) -> String {
+        let chars = buf.as_bytes();
 
-        for c in buf {
-            vec.push(match c {
+        let vec: Vec<u8> = chars
+            .iter()
+            .map(|c| match c {
                 65..=90 => {
                     let pos = c % 65;
-                    65 + ((pos + key) % 26)
+                    65 + ((pos + self.shift) % 26)
                 }
                 97..=122 => {
                     let pos = c % 97;
-                    97 + ((pos + key) % 26)
+                    97 + ((pos + self.shift) % 26)
                 }
                 _ => *c,
-            });
-        }
+            })
+            .collect();
+
         // this is safe because non-utf8 bytes will never be pushed to vec
         unsafe { String::from_utf8_unchecked(vec) }
     }
 
-    fn decrypt(buf: &[u8], key: u8) -> String {
-        let mut vec: Vec<u8> = Vec::with_capacity(buf.len());
+    pub fn decrypt<S: Deref<Target = str>>(&self, buf: S) -> String {
+        let chars = buf.as_bytes();
 
-        for c in buf {
-            vec.push(match c {
+        let vec: Vec<u8> = chars
+            .iter()
+            .map(|c| match c {
                 65..=90 => {
                     let pos = c % 65;
-                    90 - (((25 - pos) + key) % 26)
+                    90 - (((25 - pos) + self.shift) % 26)
                 }
                 97..=122 => {
                     let pos = c % 97;
-                    122 - (((25 - pos) + key) % 26)
+                    122 - (((25 - pos) + self.shift) % 26)
                 }
                 _ => *c,
-            });
-        }
+            })
+            .collect();
+
         // this is safe because non-utf8 bytes will never be pushed to vec
         unsafe { String::from_utf8_unchecked(vec) }
     }
@@ -61,60 +65,67 @@ mod tests {
 
     #[test]
     fn test_decrypt_basic() {
+        let key: u8 = 10;
+        let caesar = Caesar::new(key);
+
         let input = String::from("Drsc sc k coxdoxmo");
         let output = String::from("This is a sentence");
 
-        let message = Caesar::Cipher(input);
-        let key: u8 = 10;
-
-        assert_eq!(message.translate(key), output);
+        assert_eq!(caesar.decrypt(input), output);
     }
 
     #[test]
     fn test_encrypt_basic() {
+        let key: u8 = 20;
+        let caesar = Caesar::new(key);
+
         let input = String::from("Tests are important");
         let output = String::from("Nymnm uly cgjilnuhn");
 
-        let message = Caesar::Plain(input);
-        let key: u8 = 20;
-
-        assert_eq!(message.translate(key), output);
+        assert_eq!(caesar.encrypt(input), output);
     }
 
     #[test]
     fn test_emoji_passthrough_decrypt() {
-        let input = String::from("😀 😁 😂 🤣 😃 😄 😅 😆 😉 😊 😋 😎 😍");
-
-        let output = input.clone();
-        let message = Caesar::Cipher(input);
         let key: u8 = 15;
+        let caesar = Caesar::new(key);
 
-        assert_eq!(message.translate(key), output);
+        let input = String::from("😀 😁 😂 🤣 😃 😄 😅 😆 😉 😊 😋 😎 😍");
+        let output = input.clone();
+
+        assert_eq!(caesar.decrypt(input), output);
     }
 
     #[test]
     fn test_emoji_passthrough_encrypt() {
-        let input = String::from("😀 😁 😂 🤣 😃 😄 😅 😆 😉 😊 😋 😎 😍");
-
-        let output = input.clone();
-        let message = Caesar::Plain(input);
         let key: u8 = 15;
+        let caesar = Caesar::new(key);
 
-        assert_eq!(message.translate(key), output);
+        let input = String::from("😀 😁 😂 🤣 😃 😄 😅 😆 😉 😊 😋 😎 😍");
+        let output = input.clone();
+
+        assert_eq!(caesar.encrypt(input), output);
     }
 
     #[test]
     fn str_test() {
-        let plain_text = Caesar::Plain("Hello world!");
-        let cipher_text = plain_text.translate(2);
-        assert_eq!("Jgnnq yqtnf!", cipher_text);
+        let key: u8 = 2;
+        let caesar = Caesar::new(key);
+
+        let input = "Hello world!";
+        let output = "Jgnnq yqtnf!".to_string();
+
+        assert_eq!(caesar.encrypt(input), output);
     }
 
     #[test]
     fn slice_test() {
-        let text = "Top secret message!";
-        let plain_text = Caesar::Plain(&text[0..10]);
-        let cipher_text = plain_text.translate(2);
-        assert_eq!("Vqr ugetgv", cipher_text);
+        let key: u8 = 2;
+        let caesar = Caesar::new(key);
+
+        let input = "Top secret message!";
+        let output = "Vqr ugetgv".to_string();
+
+        assert_eq!(caesar.encrypt(&input[0..10]), output);
     }
 }

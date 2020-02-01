@@ -11,9 +11,9 @@ fn main() {
     // the key or "shift"
     let key: u8 = 2;
     let caesar = Caesar::new(2);
+    let mut input = String::from("Hello world!");
+    caesar.encrypt(&mut input)
 
-    let input = "Hello world!";
-
-    assert_eq!(caesar.encrypt(input), "Jgnnq yqtnf!".to_string());
+    assert_eq!(input, "Jgnnq yqtnf!".to_string());
 }
 ```

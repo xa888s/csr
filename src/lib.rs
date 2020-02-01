@@ -1,7 +1,7 @@
 use num::cast::AsPrimitive;
 use std::ops::Deref;
 
-/// The main type of this crate. Holds a key (u8) and provides the methods
+/// The main type of this crate. Holds a key (u8), and provides the methods
 /// to encrypt and decrypt Strings, slices, and more!
 #[derive(Clone, Copy)]
 pub struct Caesar {

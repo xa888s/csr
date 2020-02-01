@@ -1,12 +1,33 @@
 use num::cast::AsPrimitive;
 use std::ops::Deref;
 
+/// The main type of this crate. Holds a key (u8) and provides the methods
+/// to encrypt and decrypt Strings, slices, and more!
 #[derive(Clone, Copy)]
 pub struct Caesar {
     shift: u8,
 }
 
 impl Caesar {
+    /// Constructs a new Caesar with the provided shift. If the shift
+    /// isn't valid, this function will panic, complaining about an invalid
+    /// shift size.
+    ///
+    /// # Examples
+    ///
+    /// Correct usage:
+    ///
+    /// ```
+    /// // value is in between 0 and 26 so it is ok!
+    /// let c = Caesar::new(2);
+    /// ```
+    ///
+    /// Incorrect usage:
+    ///
+    /// ```
+    /// // PANICS!!!
+    /// let c = Caesar::new(100);
+    /// ```
     pub fn new<U: AsPrimitive<u8>>(shift: U) -> Self {
         // Shift size must be bigger than 0 and smaller than or equal to 26
         match shift.as_() {
@@ -15,6 +36,15 @@ impl Caesar {
         }
     }
 
+    /// Encrypts a buffer and consumes the Caesar.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// let c = Caesar::new(2);
+    /// let input = "Attack at dawn!";
+    /// assert_eq!(c.encrypt(input), "Cvvcem cv fcyp!")
+    /// ```
     pub fn encrypt<S: Deref<Target = str>>(self, buf: S) -> String {
         let chars = buf.as_bytes();
 
@@ -37,6 +67,15 @@ impl Caesar {
         unsafe { String::from_utf8_unchecked(vec) }
     }
 
+    /// Decrypts a buffer and consumes the Caesar.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// let c = Caesar::new(2);
+    /// let input = "They are coming from the north!";
+    /// assert_eq!(c.encrypt(input), "Vjga ctg eqokpi htqo vjg pqtvj!")
+    /// ```
     pub fn decrypt<S: Deref<Target = str>>(self, buf: S) -> String {
         let chars = buf.as_bytes();
 

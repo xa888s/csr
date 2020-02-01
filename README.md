@@ -1,7 +1,7 @@
 # csr
 This is a library that provides encryption and decryption for the caesar cipher.
 
-Docs: [![docs.rs](https://docs.rs/csr/badge.svg)](https://docs.rs/csr)
+[![docs.rs](https://docs.rs/csr/badge.svg)](https://docs.rs/csr)
 
 ### WARNING: OBVIOUSLY NOT CRYPTOGRAPHICALLY SECURE
 

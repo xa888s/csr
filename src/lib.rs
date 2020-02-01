@@ -15,7 +15,7 @@ impl Caesar {
         }
     }
 
-    pub fn encrypt<S: Deref<Target = str>>(&self, buf: S) -> String {
+    pub fn encrypt<S: Deref<Target = str>>(self, buf: S) -> String {
         let chars = buf.as_bytes();
 
         let vec: Vec<u8> = chars
@@ -37,7 +37,7 @@ impl Caesar {
         unsafe { String::from_utf8_unchecked(vec) }
     }
 
-    pub fn decrypt<S: Deref<Target = str>>(&self, buf: S) -> String {
+    pub fn decrypt<S: Deref<Target = str>>(self, buf: S) -> String {
         let chars = buf.as_bytes();
 
         let vec: Vec<u8> = chars

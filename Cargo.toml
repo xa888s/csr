@@ -1,10 +1,18 @@
 [package]
-name = "caesar"
+name = "csr"
 version = "0.6.0"
-authors = ["abyss"]
+authors = ["abyss <derribado@tutanota.com>"]
+description = """
+csr is a library for encrypting and decrypting many types using caesar
+cipher. This shouldn't be used for any serious security but was more of
+an exercise in generics and creating a rust crate.
+"""
+homepage = "https://git.cryptid.cc/lost/caesar-rs"
+repository = "https://git.cryptid.cc/lost/caesar-rs"
+keywords = ["caesar", "cipher"]
+categories = ["text-processing"]
+license = "MIT/Apache-2.0"
 edition = "2018"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 num = "0.2.1"

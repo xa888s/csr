@@ -1,5 +1,4 @@
 use num::cast::AsPrimitive;
-use std::ops::{Deref, DerefMut};
 
 #[derive(Clone, Copy)]
 pub struct Caesar {
@@ -15,7 +14,7 @@ impl Caesar {
         }
     }
 
-    pub fn encrypt<S: Deref<Target = str> + DerefMut>(self, buf: &mut S) {
+    pub fn encrypt(self, buf: &mut String) {
         let chars = unsafe { buf.as_bytes_mut() };
 
         for c in chars {
@@ -33,7 +32,7 @@ impl Caesar {
         }
     }
 
-    pub fn decrypt<S: Deref<Target = str> + DerefMut>(self, buf: &mut S) {
+    pub fn decrypt(self, buf: &mut String) {
         let chars = unsafe { buf.as_bytes_mut() };
 
         for c in chars {

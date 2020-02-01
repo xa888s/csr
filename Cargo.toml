@@ -1,6 +1,6 @@
 [package]
 name = "csr"
-version = "0.6.0"
+version = "0.6.1"
 authors = ["abyss <derribado@tutanota.com>"]
 description = """
 csr is a library for encrypting and decrypting many types using caesar
@@ -9,6 +9,8 @@ an exercise in generics and creating a rust crate.
 """
 homepage = "https://git.cryptid.cc/lost/caesar-rs"
 repository = "https://git.cryptid.cc/lost/caesar-rs"
+documentation = "https://docs.rs/csr"
+readme = "README.md"
 keywords = ["caesar", "cipher"]
 categories = ["text-processing"]
 license = "MIT/Apache-2.0"

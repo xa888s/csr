@@ -1,5 +1,6 @@
 use num::cast::AsPrimitive;
 use std::ops::Deref;
+use std::ops::Rem;
 
 /// The main type of this crate. Holds a key (u8), and provides the methods
 /// to encrypt and decrypt Strings, slices, and more!
@@ -10,29 +11,31 @@ pub struct Caesar {
 
 impl Caesar {
     /// Constructs a new Caesar with the provided shift. If the shift
-    /// isn't valid, this function will panic, complaining about an invalid
-    /// shift size.
+    /// isn't valid, this function will get the remainder and shift by
+    /// that instead.
     ///
     /// # Examples
     ///
-    /// Correct usage:
-    ///
     /// ```
+    /// use csr::Caesar;
+    ///
     /// // value is in between 0 and 26 so it is ok!
     /// let c = Caesar::new(2);
     /// ```
     ///
-    /// Incorrect usage:
-    ///
     /// ```
-    /// // PANICS!!!
+    /// use csr::Caesar;
+    ///
+    /// // gets remainder, returning 22
     /// let c = Caesar::new(100);
     /// ```
-    pub fn new<U: AsPrimitive<u8>>(shift: U) -> Self {
-        // Shift size must be bigger than 0 and smaller than or equal to 26
-        match shift.as_() {
-            0..=26 => Caesar { shift: shift.as_() },
-            _ => panic!("Shift size must be between 0 and 26!"),
+    pub fn new<U: AsPrimitive<u8> + Rem>(shift: U) -> Self {
+        // shift size should be bigger than 0 and smaller than or equal to 26
+        Caesar {
+            shift: match shift.as_() {
+                0..=26 => shift.as_(),
+                _ => shift.as_() % 26,
+            },
         }
     }
 
@@ -41,6 +44,8 @@ impl Caesar {
     /// # Example
     ///
     /// ```
+    /// use csr::Caesar;
+    ///
     /// let c = Caesar::new(2);
     /// let input = "Attack at dawn!";
     /// assert_eq!(c.encrypt(input), "Cvvcem cv fcyp!")
@@ -51,19 +56,23 @@ impl Caesar {
         let vec: Vec<u8> = chars
             .iter()
             .map(|c| match c {
-                65..=90 => {
-                    let pos = c % 65;
-                    65 + ((pos + self.shift) % 26)
-                }
+                // this is first because most letters will be lowercase
+                // a-z lowercase
                 97..=122 => {
                     let pos = c % 97;
                     97 + ((pos + self.shift) % 26)
+                }
+                // A-Z uppercase
+                65..=90 => {
+                    let pos = c % 65;
+                    65 + ((pos + self.shift) % 26)
                 }
                 _ => *c,
             })
             .collect();
 
-        // this is safe because non-utf8 bytes will never be pushed to vec
+        // this is safe because non-utf8 bytes will never be pushed to "vec"
+        // thanks to the trait bound.
         unsafe { String::from_utf8_unchecked(vec) }
     }
 
@@ -72,6 +81,8 @@ impl Caesar {
     /// # Example
     ///
     /// ```
+    /// use csr::Caesar;
+    ///
     /// let c = Caesar::new(2);
     /// let input = "They are coming from the north!";
     /// assert_eq!(c.encrypt(input), "Vjga ctg eqokpi htqo vjg pqtvj!")
@@ -82,19 +93,23 @@ impl Caesar {
         let vec: Vec<u8> = chars
             .iter()
             .map(|c| match c {
-                65..=90 => {
-                    let pos = c % 65;
-                    90 - (((25 - pos) + self.shift) % 26)
-                }
+                // this is first because most letters will be lowercase
+                // a-z lowercase
                 97..=122 => {
                     let pos = c % 97;
                     122 - (((25 - pos) + self.shift) % 26)
+                }
+                // A-Z uppercase
+                65..=90 => {
+                    let pos = c % 65;
+                    90 - (((25 - pos) + self.shift) % 26)
                 }
                 _ => *c,
             })
             .collect();
 
-        // this is safe because non-utf8 bytes will never be pushed to vec
+        // this is safe because non-utf8 bytes will never be pushed to "vec"
+        // thanks to the trait bound.
         unsafe { String::from_utf8_unchecked(vec) }
     }
 }

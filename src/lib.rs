@@ -53,6 +53,31 @@ impl Caesar {
     pub fn encrypt<S: Deref<Target = str>>(self, buf: S) -> String {
         let chars = buf.as_bytes();
 
+        // this is safe because non-utf8 bytes will never be passed
+        // thanks to the trait bound.
+        unsafe { self.encrypt_unchecked(chars) }
+    }
+
+    /// The unsafe version of encrypt. This takes a slice of bytes and converts them
+    /// into a string. It is up to the caller to make sure these bytes are valid UTF-8.
+    ///
+    /// # Safety
+    ///
+    /// This function is unsafe because it does not check that the bytes passed to it
+    /// are valid UTF-8. If this constraint is violated, undefined behavior results,
+    /// as the rest of Rust assumes that Strings are valid UTF-8.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use csr::Caesar;
+    ///
+    /// let c = Caesar::new(2);
+    /// let bytes = b"bruh moment 69";
+    /// let output = unsafe { c.encrypt_unchecked(bytes) };
+    /// assert_eq!(output, "dtwj oqogpv 69")
+    /// ```
+    pub unsafe fn encrypt_unchecked(self, chars: &[u8]) -> String {
         let vec: Vec<u8> = chars
             .iter()
             .map(|c| match c {
@@ -71,9 +96,7 @@ impl Caesar {
             })
             .collect();
 
-        // this is safe because non-utf8 bytes will never be pushed to "vec"
-        // thanks to the trait bound.
-        unsafe { String::from_utf8_unchecked(vec) }
+        String::from_utf8_unchecked(vec)
     }
 
     /// Decrypts a buffer and consumes the Caesar.
@@ -90,6 +113,31 @@ impl Caesar {
     pub fn decrypt<S: Deref<Target = str>>(self, buf: S) -> String {
         let chars = buf.as_bytes();
 
+        // this is safe because non-utf8 bytes will never be passed
+        // thanks to the trait bound.
+        unsafe { self.decrypt_unchecked(chars) }
+    }
+
+    /// The unsafe version of decrypt. This takes a slice of bytes and converts them
+    /// into a string. It is up to the caller to make sure these bytes are valid UTF-8.
+    ///
+    /// # Safety
+    ///
+    /// This function is unsafe because it does not check that the bytes passed to it
+    /// are valid UTF-8. If this constraint is violated, undefined behavior results,
+    /// as the rest of Rust assumes that Strings are valid UTF-8.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use csr::Caesar;
+    ///
+    /// let c = Caesar::new(2);
+    /// let bytes = b"skrrt skrrt on em";
+    /// let output = unsafe { c.decrypt_unchecked(bytes) };
+    /// assert_eq!(output, "qippr qippr ml ck")
+    /// ```
+    pub unsafe fn decrypt_unchecked(self, chars: &[u8]) -> String {
         let vec: Vec<u8> = chars
             .iter()
             .map(|c| match c {
@@ -108,9 +156,7 @@ impl Caesar {
             })
             .collect();
 
-        // this is safe because non-utf8 bytes will never be pushed to "vec"
-        // thanks to the trait bound.
-        unsafe { String::from_utf8_unchecked(vec) }
+        String::from_utf8_unchecked(vec)
     }
 }
 

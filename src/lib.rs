@@ -1,6 +1,5 @@
 use num::cast::AsPrimitive;
-use std::ops::Deref;
-use std::ops::Rem;
+use std::ops::{Deref, Rem};
 
 /// The main type of this crate. Holds a key (u8), and provides the methods
 /// to encrypt and decrypt Strings, slices, and more!
@@ -53,31 +52,6 @@ impl Caesar {
     pub fn encrypt<S: Deref<Target = str>>(self, buf: S) -> String {
         let chars = buf.as_bytes();
 
-        // this is safe because non-utf8 bytes will never be passed
-        // thanks to the trait bound.
-        unsafe { self.encrypt_unchecked(chars) }
-    }
-
-    /// The unsafe version of encrypt. This takes a slice of bytes and converts them
-    /// into a string. It is up to the caller to make sure these bytes are valid UTF-8.
-    ///
-    /// # Safety
-    ///
-    /// This function is unsafe because it does not check that the bytes passed to it
-    /// are valid UTF-8. If this constraint is violated, undefined behavior results,
-    /// as the rest of Rust assumes that Strings are valid UTF-8.
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use csr::Caesar;
-    ///
-    /// let c = Caesar::new(2);
-    /// let bytes = b"bruh moment 69";
-    /// let output = unsafe { c.encrypt_unchecked(bytes) };
-    /// assert_eq!(output, "dtwj oqogpv 69")
-    /// ```
-    pub unsafe fn encrypt_unchecked(self, chars: &[u8]) -> String {
         let vec: Vec<u8> = chars
             .iter()
             .map(|c| match c {
@@ -96,7 +70,48 @@ impl Caesar {
             })
             .collect();
 
-        String::from_utf8_unchecked(vec)
+        // this is safe because non-utf8 bytes will never be passed
+        // thanks to the trait bound.
+        unsafe { String::from_utf8_unchecked(vec) }
+    }
+
+    /// This function takes a mutable slice of bytes and encrypts them in place.
+    ///
+    /// # Safety
+    ///
+    /// This function is safe because it only guarantees valid UTF-8 bytes
+    /// if the input is also valid.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use csr::Caesar;
+    ///
+    /// let c = Caesar::new(2);
+    /// // "bruh"
+    /// let mut bytes = [98, 114, 117, 104];
+    /// // "dtwj"
+    /// let output = [100, 116, 119, 106];
+    /// c.encrypt_bytes(&mut bytes);
+    /// assert_eq!(bytes, output);
+    /// ```
+    pub fn encrypt_bytes(self, chars: &mut [u8]) {
+        for c in chars {
+            *c = match *c {
+                // this is first because most letters will be lowercase
+                // a-z lowercase
+                97..=122 => {
+                    let pos = *c % 97;
+                    97 + ((pos + self.shift) % 26)
+                }
+                // A-Z uppercase
+                65..=90 => {
+                    let pos = *c % 65;
+                    65 + ((pos + self.shift) % 26)
+                }
+                _ => *c,
+            }
+        }
     }
 
     /// Decrypts a buffer and consumes the Caesar.
@@ -113,31 +128,6 @@ impl Caesar {
     pub fn decrypt<S: Deref<Target = str>>(self, buf: S) -> String {
         let chars = buf.as_bytes();
 
-        // this is safe because non-utf8 bytes will never be passed
-        // thanks to the trait bound.
-        unsafe { self.decrypt_unchecked(chars) }
-    }
-
-    /// The unsafe version of decrypt. This takes a slice of bytes and converts them
-    /// into a string. It is up to the caller to make sure these bytes are valid UTF-8.
-    ///
-    /// # Safety
-    ///
-    /// This function is unsafe because it does not check that the bytes passed to it
-    /// are valid UTF-8. If this constraint is violated, undefined behavior results,
-    /// as the rest of Rust assumes that Strings are valid UTF-8.
-    ///
-    /// # Example
-    ///
-    /// ```
-    /// use csr::Caesar;
-    ///
-    /// let c = Caesar::new(2);
-    /// let bytes = b"skrrt skrrt on em";
-    /// let output = unsafe { c.decrypt_unchecked(bytes) };
-    /// assert_eq!(output, "qippr qippr ml ck")
-    /// ```
-    pub unsafe fn decrypt_unchecked(self, chars: &[u8]) -> String {
         let vec: Vec<u8> = chars
             .iter()
             .map(|c| match c {
@@ -156,7 +146,48 @@ impl Caesar {
             })
             .collect();
 
-        String::from_utf8_unchecked(vec)
+        // this is safe because non-utf8 bytes will never be passed
+        // thanks to the trait bound.
+        unsafe { String::from_utf8_unchecked(vec) }
+    }
+
+    /// This function takes a mutable slice of bytes and decrypts them in place.
+    ///
+    /// # Safety
+    ///
+    /// This function is safe because it only guarantees valid UTF-8 bytes
+    /// if the input is also valid.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use csr::Caesar;
+    ///
+    /// let c = Caesar::new(2);
+    /// // "skrrt"
+    /// let mut bytes = [115, 107, 114, 114, 116];
+    /// // "qippr"
+    /// let output = [113, 105, 112, 112, 114];
+    /// c.decrypt_bytes(&mut bytes);
+    /// assert_eq!(bytes, output);
+    /// ```
+    pub fn decrypt_bytes(self, chars: &mut [u8]) {
+        for c in chars {
+            *c = match *c {
+                // this is first because most letters will be lowercase
+                // a-z lowercase
+                97..=122 => {
+                    let pos = *c % 97;
+                    122 - (((25 - pos) + self.shift) % 26)
+                }
+                // A-Z uppercase
+                65..=90 => {
+                    let pos = *c % 65;
+                    90 - (((25 - pos) + self.shift) % 26)
+                }
+                _ => *c,
+            }
+        }
     }
 }
 

@@ -1,6 +1,6 @@
 [package]
 name = "csr"
-version = "0.8.0"
+version = "0.8.1"
 authors = ["abyss <derribado@tutanota.com>"]
 description = """
 csr is a library for encrypting and decrypting many types using caesar

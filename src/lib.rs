@@ -196,7 +196,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_decrypt_basic() {
+    fn decrypt_basic() {
         let key: u8 = 10;
         let caesar = Caesar::new(key);
 
@@ -207,7 +207,7 @@ mod tests {
     }
 
     #[test]
-    fn test_encrypt_basic() {
+    fn encrypt_basic() {
         let key: u8 = 20;
         let caesar = Caesar::new(key);
 
@@ -218,46 +218,55 @@ mod tests {
     }
 
     #[test]
-    fn test_emoji_passthrough_decrypt() {
+    fn emoji_passthrough_decrypt() {
         let key: u8 = 15;
         let caesar = Caesar::new(key);
 
-        let input = String::from("😀 😁 😂 🤣 😃 😄 😅 😆 😉 😊 😋 😎 😍");
-        let output = input.clone();
+        let input = "😀 😁 😂 🤣 😃 😄 😅 😆 😉 😊 😋 😎 😍";
 
-        assert_eq!(caesar.decrypt(input), output);
+        assert_eq!(caesar.decrypt(input), input);
     }
 
     #[test]
-    fn test_emoji_passthrough_encrypt() {
+    fn emoji_passthrough_encrypt() {
         let key: u8 = 15;
         let caesar = Caesar::new(key);
 
-        let input = String::from("😀 😁 😂 🤣 😃 😄 😅 😆 😉 😊 😋 😎 😍");
-        let output = input.clone();
+        let input = "😀 😁 😂 🤣 😃 😄 😅 😆 😉 😊 😋 😎 😍";
 
-        assert_eq!(caesar.encrypt(input), output);
+        assert_eq!(caesar.encrypt(input), input);
     }
 
     #[test]
-    fn str_test() {
+    fn str() {
         let key: u8 = 2;
         let caesar = Caesar::new(key);
 
         let input = "Hello world!";
-        let output = "Jgnnq yqtnf!".to_string();
+        let output = "Jgnnq yqtnf!";
 
         assert_eq!(caesar.encrypt(input), output);
     }
 
     #[test]
-    fn slice_test() {
+    fn slice() {
         let key: u8 = 2;
         let caesar = Caesar::new(key);
 
         let input = "Top secret message!";
-        let output = "Vqr ugetgv".to_string();
+        let output = "Vqr ugetgv";
 
         assert_eq!(caesar.encrypt(&input[0..10]), output);
+    }
+
+    #[test]
+    fn big_shift() {
+        let key: u8 = 27;
+        let caesar = Caesar::new(key);
+
+        let input = "a";
+        let output = "b";
+
+        assert_eq!(caesar.encrypt(input), output);
     }
 }

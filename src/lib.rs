@@ -57,12 +57,12 @@ impl Caesar {
             .map(|c| match c {
                 // this is first because most letters will be lowercase
                 // a-z lowercase
-                97..=122 => {
+                b'a'..=b'z' => {
                     let pos = c % 97;
                     97 + ((pos + self.shift) % 26)
                 }
                 // A-Z uppercase
-                65..=90 => {
+                b'A'..=b'Z' => {
                     let pos = c % 65;
                     65 + ((pos + self.shift) % 26)
                 }
@@ -100,12 +100,12 @@ impl Caesar {
             *c = match *c {
                 // this is first because most letters will be lowercase
                 // a-z lowercase
-                97..=122 => {
+                b'a'..=b'z' => {
                     let pos = *c % 97;
                     97 + ((pos + self.shift) % 26)
                 }
                 // A-Z uppercase
-                65..=90 => {
+                b'A'..=b'Z' => {
                     let pos = *c % 65;
                     65 + ((pos + self.shift) % 26)
                 }
@@ -133,12 +133,12 @@ impl Caesar {
             .map(|c| match c {
                 // this is first because most letters will be lowercase
                 // a-z lowercase
-                97..=122 => {
+                b'a'..=b'z' => {
                     let pos = c % 97;
                     122 - (((25 - pos) + self.shift) % 26)
                 }
                 // A-Z uppercase
-                65..=90 => {
+                b'A'..=b'Z' => {
                     let pos = c % 65;
                     90 - (((25 - pos) + self.shift) % 26)
                 }
@@ -176,12 +176,12 @@ impl Caesar {
             *c = match *c {
                 // this is first because most letters will be lowercase
                 // a-z lowercase
-                97..=122 => {
+                b'a'..=b'z' => {
                     let pos = *c % 97;
                     122 - (((25 - pos) + self.shift) % 26)
                 }
                 // A-Z uppercase
-                65..=90 => {
+                b'A'..=b'Z' => {
                     let pos = *c % 65;
                     90 - (((25 - pos) + self.shift) % 26)
                 }
